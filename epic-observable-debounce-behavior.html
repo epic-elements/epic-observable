@@ -1,0 +1,31 @@
+<link rel="import" href="zen-observable.html">
+
+<script>
+	Polymer.Epic = Polymer.Epic || {};
+	Polymer.Epic.ObservableEventStreamBehavior = {
+		debounce: function(time) {
+			if (typeof time !== "number") {
+				throw new TypeError(time + " is not a number");
+			}
+			let C = getSpecies(this.constructor);
+			return new C(observer => this.subscribe({
+				next(value) {
+					if (observer.closed) {
+						return
+					}
+					try {
+						return Polymer.debounce('debounce$', () => observer.next(value), time);
+					} catch (e) {
+						return observer.error(e)
+					}
+				},
+				error(e) {
+					return observer.error(e)
+				},
+				complete(x) {
+					return observer.complete(x)
+				},
+			}));
+		};
+	},
+</script>

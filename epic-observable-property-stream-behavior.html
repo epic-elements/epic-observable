@@ -1,0 +1,53 @@
+<link rel="import" href="dist/rxjs/rx.html">
+
+<script>
+	Polymer.Epic = Polymer.Epic || {};
+	Polymer.Epic.PropertyObservableBehaviorImpl = {
+		properties: {
+			_properties$: {
+				type: Object,
+				value: function() {
+					let properties$ = new Rx.ReplaySubject();
+					return properties$.mergeAll();
+				},
+				notify: false,
+				readOnly: true
+			}
+		},
+		beforeRegister: function() {
+			let properties$ = this._createModelStream(this.properties);
+			let observers$ = this._createObserversStream(properties$);
+			this._handleCallBacksEffects(properties$, observers$);
+		},
+		_createModelStream: function(properties) {
+			return Rx.Observable.from(Object.keys(properties))
+				.map(p => Object.assign({}, {
+					path: p
+				}, this.properties[p]))
+				.filter(p => !p.path.includes('$'));
+		},
+
+		_createObserversStream: function(properties$) {
+			return properties$
+				.map(p => String('_push' + p.path + 'Changes(' + p.path + ', _properties$)'))
+				.filter(v => v);
+		},
+		_handleCallBacksEffects: function(properties$, observers$) {
+			this.observers = this.observers || [];
+			properties$.subscribe(p => {
+				this['_push' + p.path + 'Changes'] = this._createCallBack(p, properties$);
+			});
+			observers$.subscribe(p => this.observers.push(p));
+		},
+		_createCallBack: function(p, properties$) {
+			return (value, properties$) => properties$
+				.next(Rx.Observable.of({
+					path: p.path,
+					value
+				}));
+		}
+	};
+	Polymer.Epic.ObservablePropertyStreamBehavior = [
+		Polymer.Epic.ObservablePropertyStreamBehaviorImpl
+	]
+</script>

@@ -1,0 +1,24 @@
+<link rel="import" href="zen-observable.html">
+<script>
+	/**
+	 * Behavior that creates an observable from dom events
+	 *
+	 * @polymerBehavior EpicObservableEventsBehavior
+	 */
+	Polymer.Epic = Polymer.Epic || {};
+	Polymer.Epic.ObservableEventsBehavior = {
+		createEventObservable: function(element, eventName) {
+			return new Observable(observer => {
+				// Create an event handler which sends data to the sink
+				let handler = event => observer.next(event);
+				// Attach the event handler
+				element.addEventListener(eventName, handler, true);
+				// Return a function which will cancel the event stream
+				return _ => {
+					// Detach the event handler from the element
+					element.removeEventListener(eventName, handler, true);
+				};
+			});
+		}
+	}
+</script>

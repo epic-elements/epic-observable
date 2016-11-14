@@ -1,0 +1,32 @@
+<link rel="import" href="zen-observable.html">
+<script>
+	/**
+	 * Behavior that creates a mutation observable
+	 *
+	 * @polymerBehavior EpicObservableMutationsBehavior
+	 */
+	Polymer.Epic = Polymer.Epic || {};
+	Polymer.Epic.ObservableMutationsBehavior = {
+		createMutationObservable: function(element, options = {}) {
+			return new Observable(observer => {
+				var defaults = {
+					attributes: true,
+					childList: true,
+					characterData: true,
+					subtree: true
+				};
+				var config = Object.assign({}, defaults, options);
+				// create an observer instance
+				var handler = mutations => mutations.forEach(mutation => subscriber.next(mutation));
+				var observer = new MutationObserver(handler);
+				// pass in the target node, as well as the observer options
+				observer.observe(element, config);
+				// Return a function which will cancel the event stream
+				return _ => {
+					// Detach the event handler from the element
+					observer.disconnect();
+				};
+			});
+		}
+	}
+</script>

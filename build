@@ -1,0 +1,1 @@
+jspm build [jspm_packages/npm/rxjs@5.0.0-rc.1/add/observable/of.js]  dist/rxjs/of.js --format global --global-deps "{'rxjs/Observable.js':'Epic','rxjs/observable/of.js':'Epic.rxjs.observable.of'}

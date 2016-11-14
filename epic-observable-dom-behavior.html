@@ -1,0 +1,46 @@
+<link rel="import"
+	href="rx.html">
+
+<script>
+	/**
+	 * Behavior that creates a mutation observable
+	 *
+	 * @polymerBehavior Polymer.Epic.ObservableTextBehavior
+	 */
+	Polymer.Epic = Polymer.Epic || {};
+	Polymer.Epic.ObservableDomBehavior = {
+		properties: {
+			dom$: {
+				type: Object,
+				readOnly: true,
+				observer: '_addMethods'
+			}
+		},
+		attached: function() {
+			let dom$ = Rx.Observable.of(document);
+			this._setDom$(dom$);
+		},
+		_querySelectorStream: function(base$, selector) {
+			let elements$ = this._elementStream.call(base$, selector);
+			let ifEmptyStream$ = this._errorIfEmptyStream.call(elements$);
+			let retryIfError$ = this._retryIfErrorStream.call(ifEmptyStream$, 500);
+			return retryIfError$
+		},
+		_elementStream: function(selector) {
+			let elements$ = this.map(parentEl => parentEl.querySelectorAll(selector))
+			return Rx.Observable.defer(() => elements$);
+		},
+		_errorIfEmptyStream: function() {
+			return this.switchMap(v => {
+				if (!v || v.length < 1) {
+					return Rx.Observable.throw('No element found')
+				}
+				return Rx.Observable.from(v)
+			})
+		},
+		_retryIfErrorStream: function(delay) {
+			return this.retryWhen(error => error.delayWhen(val => Rx.Observable.timer(delay)),
+				Rx.AnimationFrameScheduler);
+		}
+	};
+</script>

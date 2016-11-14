@@ -1,0 +1,37 @@
+<link rel="import"
+	href="rx.html">
+
+<script>
+	'use strict';
+
+	Rx.Observable.dom = function() {
+		return Rx.Observable.of(document).take(1);
+	};
+	Rx.Observable.prototype.querySelector = function(selector) {
+		var elements$ = this.getElements(selector).errorIfEmpty().retryIfError(500);
+		return elements$;
+	};
+	Rx.Observable.prototype.getElements = function(selector) {
+		var elements$ = this.map(function(parentEl) {
+			return parentEl.querySelectorAll(selector);
+		});
+		return Rx.Observable.defer(function() {
+			return elements$;
+		});
+	};
+	Rx.Observable.prototype.errorIfEmpty = function() {
+		return this.switchMap(function(v) {
+			if (!v || v.length < 1) {
+				return Rx.Observable.throw('No element found');
+			}
+			return Rx.Observable.from(v);
+		});
+	};
+	Rx.Observable.prototype.retryIfError = function(delay) {
+		return this.retryWhen(function(error) {
+			return error.delayWhen(function(val) {
+				return Rx.Observable.timer(delay);
+			});
+		}, Rx.AnimationFrameScheduler);
+	};
+</script>

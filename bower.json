@@ -1,0 +1,16 @@
+{
+  "name": "epic-observable",
+  "main": "epic-observable.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "zen-observable": "https://raw.githubusercontent.com/zenparsing/zen-observable/master/zen-observable.js",
+    "Rx": "https://unpkg.com/@reactivex/rxjs/dist/global/Rx.js",
+    "bacon": "~0.7.88"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}

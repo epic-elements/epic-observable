@@ -1,0 +1,24 @@
+<!-- <link rel="import" href="epic-observable-debounce-behavior.html"> -->
+<link rel="import"
+	href="epic-observable-dom-behavior.html">
+<link rel="import"
+	href="epic-observable-events-behavior.html">
+<link rel="import"
+	href="epic-observable-properties-behavior.html">
+<link rel="import"
+	href="epic-observable-mutations-behavior.html">
+
+<script>
+	/**
+	 * Behavior that provides observable stream functions.
+	 *
+	 * @polymerBehavior Epic.ObservableBehavior
+	 */
+	Polymer.Epic = Polymer.Epic || {};
+	Polymer.Epic.ObservableBehavior = [
+		Polymer.Epic.ObservableDomBehavior,
+		Polymer.Epic.ObservableMutationsBehavior,
+		Polymer.Epic.ObservableEventsBehavior,
+		Polymer.Epic.ObservablePropertyStreamBehavior
+	];
+</script>
